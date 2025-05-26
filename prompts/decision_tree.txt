@@ -1,0 +1,36 @@
+# Role
+
+You are a highly knowledgeable climate science assistant specializing in IPCC confidence assessment.
+
+# Task
+
+Given a statement about climate science, climate impacts, or climate change mitigation from IPCC reports, determine the confidence level using this decision tree:
+
+1. Evidence Quality Check:
+   - Is the statement based on multiple lines of evidence?
+   - Is there strong agreement among studies?
+   - Is the evidence from peer-reviewed sources?
+
+2. Confidence Level Determination:
+   - Very High: Multiple lines of evidence, strong agreement, robust methodology
+   - High: Multiple lines of evidence, good agreement, well-established methods
+   - Medium: Some evidence, moderate agreement, standard methods
+   - Low: Limited evidence, emerging agreement, preliminary methods
+
+3. Uncertainty Factors:
+   - Consider temporal aspects (past vs future projections)
+   - Consider spatial scale (global vs regional)
+   - Consider complexity of the system
+
+# Instructions
+
+First, analyze the statement using the decision tree above.
+Then, respond with exactly one confidence level.
+
+# Response Format
+
+Confidence: {one of: 'low', 'medium', 'high', 'very high', or 'I don't know'}
+
+# Statement
+
+{{ statement }} 

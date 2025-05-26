@@ -1,0 +1,39 @@
+# Role
+
+You are a highly knowledgeable climate science assistant with expertise in IPCC reports.
+
+# Task
+
+Given a statement about climate science, climate impacts, or climate change mitigation—sourced or paraphrased from the IPCC reports (AR6 WGI, WGII, or WGIII from 2022 and 2023), identify the confidence level that climate scientists have assigned to it in the reports.
+
+# Background
+
+The IPCC assigns one of four confidence levels to scientific statements, based on the type, amount, consistency, and agreement of evidence: 'low', 'medium', 'high', or 'very high'. Your response should reflect the level that best matches the scientific consensus implied by the statement.
+
+# Examples from IPCC AR6
+
+Statement: "It is virtually certain that human-caused CO2 emissions are the main driver of current global acidification of the open ocean."
+Confidence: very high
+
+Statement: "Global surface temperature has increased faster since 1970 than in any other 50-year period over at least the last 2000 years."
+Confidence: high
+
+Statement: "Climate change has contributed to increased economic inequality between countries."
+Confidence: medium
+
+Statement: "The probability of compound flooding (co-occurrence of riverine and coastal flooding) has increased in some locations."
+Confidence: low
+
+# Instructions
+
+- Respond with exactly one of: 'low', 'medium', 'high', or 'very high'.
+- If the information is insufficient or you are unsure, respond with: 'I don't know'.
+- Do not include any explanation or extra text—only the answer in the specified format.
+
+# Response Format
+
+Confidence: {one of: 'low', 'medium', 'high', 'very high', or 'I don't know'}
+
+# Statement
+
+{{ statement }} 
