@@ -1,29 +1,75 @@
-import pandas as pd
-import argparse
+"""
+Compute accuracy from model results:
 
-def compute_accuracy(results_file):
-    # Read the TSV file
-    df = pd.read_csv(results_file, sep='\t')
+    python eval.py results.tsv
+"""
+import argparse, sys
+import pandas as pd
+from collections import defaultdict
+
+def compute_accuracy(df: pd.DataFrame) -> dict:
+    """Compute accuracy and error statistics from results."""
+    # Get only the last model column (the actual model results)
+    model_cols = [col for col in df.columns if col not in ["statement_idx", "statement", "confidence"]]
+    if not model_cols:
+        return {}
+    model = model_cols[-1]  # Get the last column
     
-    # Get the model column (assuming it's the last column)
-    model_column = df.columns[-1]
+    # Count correct predictions
+    correct = (df[model] == df["confidence"]).sum()
+    total = len(df)
     
-    # Calculate accuracy
-    correct_predictions = (df['confidence'] == df[model_column]).sum()
-    total_predictions = len(df)
-    accuracy = correct_predictions / total_predictions
+    # Count errors
+    errors = defaultdict(int)
+    for value in df[model].dropna():
+        # Only convert to string for error checking
+        if isinstance(value, str) and (value.startswith("ERR:") or value == "PARSE_FAIL"):
+            errors[value] += 1
     
-    print(f"\nResults for {model_column}:")
-    print(f"Total predictions: {total_predictions}")
-    print(f"Correct predictions: {correct_predictions}")
-    print(f"Accuracy: {accuracy:.2%}")
+    # Calculate accuracy (including all predictions)
+    accuracy = correct / total if total > 0 else 0
+    
+    return {
+        model: {
+            "accuracy": accuracy,
+            "correct": correct,
+            "total": total,
+            "errors": dict(errors)
+        }
+    }
 
 def main():
-    parser = argparse.ArgumentParser(description='Compute classification accuracy from results TSV file')
-    parser.add_argument('results_file', help='Path to the results TSV file')
-    args = parser.parse_args()
+    ap = argparse.ArgumentParser(description="Compute accuracy from model results")
+    ap.add_argument("results", help="TSV file with model results")
+    args = ap.parse_args()
     
-    compute_accuracy(args.results_file)
+    # Read results
+    try:
+        df = pd.read_csv(args.results, sep='\t')
+    except Exception as e:
+        sys.exit(f"Error reading {args.results}: {e}")
+    
+    # Validate columns
+    required = ["statement_idx", "statement", "confidence"]
+    missing = [col for col in required if col not in df.columns]
+    if missing:
+        sys.exit(f"Missing required columns: {missing}")
+    
+    # Compute accuracy
+    results = compute_accuracy(df)
+    
+    # Print results
+    print("\nAccuracy Results:")
+    print("-" * 80)
+    for model, stats in results.items():
+        print(f"\n{model}:")
+        print(f"  Accuracy: {stats['accuracy']:.1%}")
+        print(f"  Correct: {stats['correct']:,} / {stats['total']:,} predictions")
+        
+        if stats['errors']:
+            print("\n  Errors:")
+            for error_type, count in sorted(stats['errors'].items()):
+                print(f"    {error_type}: {count:,}")
 
 if __name__ == "__main__":
     main() 
