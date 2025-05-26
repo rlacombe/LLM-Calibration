@@ -1,0 +1,12 @@
+# models.yaml  ─ logical short-names → OpenRouter model IDs
+o1: openai/o1
+o3: openai/o3
+o4_mini_high: openai/o4-mini-high
+claude_4_opus: anthropic/claude-opus-4
+gemini_flash_2_5: google/gemini-2.5-flash-preview-05-20
+deepseek_r1: deepseek/deepseek-chat-r1
+llama3_70b: meta-llama/llama-3-70b
+mixtral_8x22b: mistralai/mixtral-8x22b-instruct
+mistral_7b_v03: mistralai/mistral-7b-instruct
+gemma_7b: google/gemma-7b-it
+phi_4: microsoft/phi-4-multimodal-instruct
