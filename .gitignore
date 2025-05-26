@@ -1,6 +1,8 @@
 # .gitignore ─ keep secrets out of the remote repo
 .env
 .env.*
+venv/
 __pycache__/
 *.py[cod]
 *.sqlite3
+logs/   
