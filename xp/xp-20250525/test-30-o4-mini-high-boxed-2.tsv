@@ -1,0 +1,31 @@
+statement_idx	report	page_num	sent_num	statement	confidence	score	split	o4_mini_high
+282	AR6_WGI	116	13	The largest co-benefits are obtained with methods that seek to restore natural ecosystems or improve soil carbon sequestration	medium	1	test	high
+3	AR6_WGI	24	2	Since 1750, increases in CO2 (47%) and CH4 (156%) concentrations far exceed – and increases in N2O (23%) are similar to – the natural multi-millennial changes between glacial and interglacial periods over at least the past 800,000 years	very high	3	test	very high
+233	AR6_WGI	101	6	Water cycle variability and related extremes are projected to increase faster than mean changes in most regions of the world and under all emissions scenarios	high	2	test	high
+77	AR6_WGI	47	7	By the end of the century, scenarios with very low and low GHG emissions would strongly limit the change of several CIDs, such as the increases in the frequency of extreme sea level events, heavy precipitation and pluvial flooding, and exceedance of dangerous heat thresholds, while limiting the number of regions where such exceedances occur, relative to higher GHG emissions scenarios	high	2	test	high
+157	AR6_WGI	87	27	Projected changes in the intensity depend on the resolution of climate models	medium	1	test	high
+621	AR6_WGI	336	10	Given the projected future sea ice losses, the effect will grow in future	low	0	test	high
+237	AR6_WGI	101	11	Global land precipitation has likely increased since 1950, with a faster increase since the 1980s	medium	1	test	medium
+190	AR6_WGI	93	13	The total Antarctic ice mass losses were dominated by the West Antarctic Ice Sheet, with combined West Antarctic and Peninsula annual loss rates increasing since about 2000	very high	3	test	very high
+81	AR6_WGI	62	2	Over the past millennium, and especially since about 1300 CE, simulated global surface temperature anomalies are well within the uncertainty of reconstructions	medium	1	test	high
+419	AR6_WGI	154	17	Extreme hydrological drought frequency has increased in a region extending from south-west to north-east China, with projected increases of agricultural and ecological drought for 4°C GWL and fire weather for 2°C and above	medium	1	test	high
+556	AR6_WGI	306	31	The best-estimate ERF from the increase in global albedo is –0.15 W m–2 since 1700 and –0.12 W m–2 since 1850	medium	1	test	medium
+371	AR6_WGI	136	16	It is very likely that mean temperatures have increased in all land regions and will continue to increase at rates greater than the global average	high	2	test	very high
+467	AR6_WGI	160	4	Improvements in urban climate modelling and climate monitoring networks have contributed to understanding the mutual interaction between regional and urban climate	high	2	test	high
+415	AR6_WGI	154	9	Future projections indicate continuing decline in seasonal snow duration, glacial mass, and permafrost area by mid-century	high	2	test	very high
+165	AR6_WGI	90	14	Ocean warming is irreversible over centuries to millennia, but the magnitude of warming is scenario-dependent from about the mid-21st century	medium	1	test	high
+548	AR6_WGI	306	10	Changes in ERF since the late 19th century are dominated by increases in concentrations of greenhouse gases and trends in aerosols; the net ERF is positive and changing at an increasing rate since the 1970s	medium	1	test	very high
+583	AR6_WGI	308	9	Over the last century, there have been increases in species turnover within many ecosystems	high	2	test	high
+86	AR6_WGI	63	8	The paleo context supports the assessment that ongoing increase in ocean heat content (OHC) represents a long-term commitment, essentially irreversible on human time scales	high	2	test	high
+586	AR6_WGI	308	13	CO2 levels during the MPWP were similar to present for a sustained period, within a range of 360–420 ppm	medium	1	test	high
+602	AR6_WGI	323	33	Limited coverage by surface observations precludes identification of zonal trends in the SH, while observations of tropospheric column ozone indicate increases of less than 5% per decade at southern mid-latitudes	medium	1	test	medium
+197	AR6_WGI	93	34	Since AR5, there is strengthened evidence for an increase in the rate of GMSL rise since the mid-20th century, with an average rate of 2.3 [1.6–3.1] mm yr–1 over the period 1971–2018 increasing to 3.7 [3.2–4.2] mm yr–1 for the period 2006–2018	high	2	test	high
+322	AR6_WGI	122	19	For global warming up to 2°C above 1850–1900 levels, paleoclimate records do not indicate abrupt changes in the carbon cycle	low	0	test	medium
+162	AR6_WGI	90	4	A long-term increase in surface open ocean pH occurred over the past 50 million years, and surface ocean pH as low as recent times is uncommon in the last 2 million years	medium	1	test	medium
+361	AR6_WGI	134	16	At global and regional scales, near-term monsoon changes will be dominated by the effects of internal variability	medium	1	test	high
+98	AR6_WGI	65	30	These higher sensitivity values can, in some models, be traced to changes in extratropical cloud feedbacks	medium	1	test	high
+151	AR6_WGI	85	31	Model estimates suggest no significant change in oxidizing capacity from 1850 to 1980	low	0	test	medium
+572	AR6_WGI	307	32	The average rate of sea level rise was 1.3 [0.6 to 2.1] mm yr –1 between 1901 and 1971, increasing to 1.9 [0.8 to 2.9] mm yr –1 between 1971 and 2006, and further increasing to 3.7 [3.2 to 4.2] mm yr –1 between 2006 and 2018	high	2	test	(empty)
+593	AR6_WGI	315	13	Based on boron and carbon isotope data, supported by other proxies (Hollis et al., 2019), atmospheric CO2 during the EECO (50 Ma) was between 1150 and 2500 ppm	medium	1	test	(empty)
+42	AR6_WGI	37	16	Over the next 2000 years, global mean sea level will rise by about 2 to 3 m if warming is limited to 1.5°C, 2 to 6 m if limited to 2°C and 19 to 22 m with 5°C of warming, and it will continue to rise over subsequent millennia	low	0	test	(empty)
+497	AR6_WGI	203	15	Over the period 1982–2016, marine heatwaves have very likely doubled in frequency and are increasing in intensity	very high	3	test	(empty)

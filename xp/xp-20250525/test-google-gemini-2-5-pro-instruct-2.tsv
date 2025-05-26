@@ -1,0 +1,11 @@
+statement_idx	report	page_num	sent_num	statement	confidence	score	split	gemini_2_5_pro
+86	AR6_WGI	63	8	The paleo context supports the assessment that ongoing increase in ocean heat content (OHC) represents a long-term commitment, essentially irreversible on human time scales	high	2	test	high
+42	AR6_WGI	37	16	Over the next 2000 years, global mean sea level will rise by about 2 to 3 m if warming is limited to 1.5°C, 2 to 6 m if limited to 2°C and 19 to 22 m with 5°C of warming, and it will continue to rise over subsequent millennia	low	0	test	low
+8093	AR6_WGIII	2058	21	For pathways that limit warming to 2°C (>67%) or lower, using GWP100 to inform cost-effective abatement choices between gases would achieve these long-term temperature goals at close to least global cost within a few percent	high	2	test	medium
+77	AR6_WGI	47	7	By the end of the century, scenarios with very low and low GHG emissions would strongly limit the change of several CIDs, such as the increases in the frequency of extreme sea level events, heavy precipitation and pluvial flooding, and exceedance of dangerous heat thresholds, while limiting the number of regions where such exceedances occur, relative to higher GHG emissions scenarios	high	2	test	high
+3	AR6_WGI	24	2	Since 1750, increases in CO2 (47%) and CH4 (156%) concentrations far exceed – and increases in N2O (23%) are similar to – the natural multi-millennial changes between glacial and interglacial periods over at least the past 800,000 years	very high	3	test	very high
+81	AR6_WGI	62	2	Over the past millennium, and especially since about 1300 CE, simulated global surface temperature anomalies are well within the uncertainty of reconstructions	medium	1	test	low
+8086	AR6_WGIII	2016	8	BEVs could create jobs associated with the EV supply chain, and could create jobs to build and operate the associated infrastructure	low	0	test	medium
+151	AR6_WGI	85	31	Model estimates suggest no significant change in oxidizing capacity from 1850 to 1980	low	0	test	low
+98	AR6_WGI	65	30	These higher sensitivity values can, in some models, be traced to changes in extratropical cloud feedbacks	medium	1	test	high
+157	AR6_WGI	87	27	Projected changes in the intensity depend on the resolution of climate models	medium	1	test	high
