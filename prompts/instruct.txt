@@ -13,13 +13,13 @@ The IPCC assigns one of four confidence levels to scientific statements, based o
 # Instructions
 
 - Think step by step carefully, but not too long, then output your response.
-- Respond with exactly one of: 'low', 'medium', 'high', or 'very high'.
+- Respond with **exactly** one of: 'low', 'medium', 'high', or 'very high'.
 - If the information is insufficient or you are unsure, respond with: 'I don't know'.
-- Do not include any explanation or extra text—only the answer in the specified format.
+- **Do not include any explanation or extra text—only the answer in the specified format**.
 
 # Response Format
 
-Confidence: {one of: 'low', 'medium', 'high', 'very high', or 'I don't know'}
+{one of: 'low', 'medium', 'high', 'very high', or 'I don't know'}
 
 # Statement
 
