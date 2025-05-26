@@ -12,19 +12,20 @@ The IPCC assigns one of four confidence levels to scientific statements, based o
 
 # Instructions
 
+- Consider each statement in the dataset separately. Do not write a heuristic or algorithmic approach, but use your knowledge and reasoning.
 - Think step by step carefully, but not too long, then output your response.
-- Respond with **exactly** one of: 'low', 'medium', 'high', or 'very high'.
+- Assign a confidence label to each statement, consisting of **exactly** one of: 'low', 'medium', 'high', or 'very high'.
 - If the information is insufficient or you are unsure, respond with: 'I don't know'.
 - **Do not include any explanation or extra text—only the answer in the specified format**.
 
 # Response Format
 
-{one of: 'low', 'medium', 'high', 'very high', or 'I don't know'}
+- {one of: 'low', 'medium', 'high', 'very high', or 'I don't know'}
 
 # Input
 
-A CSV file with each line containing a {{ statement }}.
+- A CSV file with each line containing a statement.
 
 # Output 
 
-The same CSV file, with an additional column "predictions" containing the {{ confidence label }} you assign to each {{ statement }}. 
+- Output the same CSV file, with an additional column "confidence" containing the confidence label you assign to each statement.
