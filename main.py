@@ -2,24 +2,31 @@
 """
 Run experiments:
 
-    python main.py --input statements.tsv --output results.tsv --models all
+    python main.py --input statements.tsv --output results.tsv --models all --rpm 60 --template default --max-tokens 500
 """
 import argparse, asyncio, sys, hashlib, traceback
 from pathlib import Path
 import pandas as pd
 from jinja2 import Template
 from tqdm.asyncio import tqdm_asyncio
+import fcntl
+import json
+from collections import defaultdict
 
 from config import PROMPT_TEMPLATE_PATH, MODEL_ID_MAP
-from router_adapter import run, TOKENS_USED
+from router_adapter import run, TOKENS_USED, set_max_rpm, set_max_tokens
 from label_parser import extract_label
 
 # ---------- Utility helpers -------------------------------------------------
 def md5(text: str) -> str:
     return hashlib.md5(text.encode("utf-8")).hexdigest()
 
-def load_template() -> Template:
-    text = PROMPT_TEMPLATE_PATH.read_text(encoding="utf-8")
+def load_template(template_name: str) -> Template:
+    """Load a prompt template by name."""
+    template_path = Path("prompts") / f"{template_name}.txt"
+    if not template_path.exists():
+        sys.exit(f"Template not found: {template_path}")
+    text = template_path.read_text(encoding="utf-8")
     return Template(text, autoescape=False)
 
 def build_prompts(df: pd.DataFrame, template: Template) -> list[str]:
@@ -32,38 +39,70 @@ def format_error(e: Exception) -> str:
     tb = traceback.format_exc()
     return f"ERR:{error_type}\nMessage: {error_msg}\nTraceback:\n{tb}"
 
+async def write_row_to_tsv(row_data: pd.DataFrame, out_path: Path):
+    """Write a row to TSV file with proper file locking."""
+    async with asyncio.Lock():  # Ensure only one write at a time
+        with open(out_path, 'a') as f:
+            fcntl.flock(f.fileno(), fcntl.LOCK_EX)  # Get exclusive lock
+            try:
+                row_data.to_csv(f, sep='\t', header=False, index=False)
+            finally:
+                fcntl.flock(f.fileno(), fcntl.LOCK_UN)  # Release lock
+
 # ---------- Async per-row runner -------------------------------------------
 async def call_models_for_row(
     row_idx: int,
     prompt: str,
     model_ids: list[str],
-    semaphore: asyncio.Semaphore,
-) -> dict[str, str]:
+    df: pd.DataFrame,
+    out_path: Path,
+    error_counts: defaultdict,
+) -> None:
     """
-    Fan-out async calls for one row; return dict model→label/None.
+    Fan-out async calls for one row; write results directly to TSV.
     """
-    async with semaphore:
-        coros = [run(mid, prompt) for mid in model_ids]
-        outputs = await asyncio.gather(*coros, return_exceptions=True)
+    coros = [run(mid, prompt) for mid in model_ids]
+    outputs = await asyncio.gather(*coros, return_exceptions=True)
 
-        results: dict[str, str] = {}
-        for mid, out in zip(model_ids, outputs):
-            # Handle exceptions nicely in the csv
-            if isinstance(out, Exception):
-                error_str = format_error(out)
-                print(f"\nError for model {mid} on row {row_idx}:")
-                print(error_str)
-                print("-" * 80)
-                results[mid] = f"ERR:{type(out).__name__}"
-                continue
-            label = extract_label(out)
-            results[mid] = label if label else "PARSE_FAIL"
-        return results
+    # Update the row in the dataframe
+    for mid, out in zip(model_ids, outputs):
+        col_name = next(name for name, model_id in MODEL_ID_MAP.items() if model_id == mid)
+        # Handle exceptions nicely in the csv
+        if isinstance(out, Exception):
+            error_str = format_error(out)
+            print(f"\nError for model {mid} on row {row_idx}:")
+            print(error_str)
+            print("-" * 80)
+            error_type = f"ERR:{type(out).__name__}"
+            df.at[row_idx, col_name] = error_type
+            error_counts[error_type] += 1
+        else:
+            # Concatenate reasoning chain with message content
+            full_text = out
+            if hasattr(out, 'reasoning_chain'):
+                full_text = f"{out.reasoning_chain}\n{out}"
+            
+            label = extract_label(full_text)
+            if label is None:
+                df.at[row_idx, col_name] = "PARSE_FAIL"
+                error_counts["PARSE_FAIL"] += 1
+            else:
+                df.at[row_idx, col_name] = label
+    
+    # Write the updated row to the TSV file with proper locking
+    await write_row_to_tsv(df.iloc[[row_idx]], out_path)
 
 # ---------- Main orchestration ---------------------------------------------
 async def main_async(args):
     print(f"Starting experiment with models: {args.models}")
     print(f"Reading input from: {args.input}")
+    print(f"Rate limit: {args.rpm} requests per minute")
+    print(f"Using template: {args.template}")
+    print(f"Max tokens per response: {args.max_tokens}")
+    
+    # Set rate limit and max tokens
+    set_max_rpm(args.rpm)
+    set_max_tokens(args.max_tokens)
     
     df = pd.read_csv(args.input, sep='\t')
 
@@ -88,38 +127,42 @@ async def main_async(args):
     print(f"\nUsing models: {', '.join(col_names)}")
     print(f"Total rows to process: {len(df)}")
 
+    # Initialize output columns
+    for name in col_names:
+        if name not in df.columns:
+            df[name] = None
+
     # Load prompt template
-    template = load_template()
+    template = load_template(args.template)
     prompts = build_prompts(df, template)
 
-    # Results will accumulate here
-    results = {name: [] for name in col_names}
+    # Create output file with headers
+    out_path = Path(args.output)
+    df.iloc[[]].to_csv(out_path, sep='\t', index=False)  # Write headers only
 
-    # Create semaphore to limit concurrency
-    semaphore = asyncio.Semaphore(args.concurrency)
-    print(f"Running with max {args.concurrency} concurrent requests")
+    # Initialize error counter
+    error_counts = defaultdict(int)
 
+    # Process rows with progress bar
     tasks = []
     for idx, prompt in enumerate(prompts):
-        tasks.append(call_models_for_row(idx, prompt, model_ids, semaphore))
+        tasks.append(call_models_for_row(idx, prompt, model_ids, df, out_path, error_counts))
 
     # Run with async progress bar
-    for row_res in tqdm_asyncio.as_completed(tasks, desc="Running", total=len(tasks)):
-        res = await row_res
-        for name in col_names:
-            results[name].append(res.get(MODEL_ID_MAP[name], "MISSING"))
+    for task in tqdm_asyncio.as_completed(tasks, desc="Running", total=len(tasks)):
+        await task  # Properly await each completed task
 
-    # Merge & write
-    for name, col in results.items():
-        df[name] = col
-
-    out_path = Path(args.output)
-    df.to_csv(out_path, sep='\t', index=False)
     print(f"\n✅ Saved results to {out_path.resolve()}")
     print(
         f"Total tokens → prompt: {TOKENS_USED['prompt']:,}  "
         f"completion: {TOKENS_USED['completion']:,}"
     )
+    
+    # Print error summary
+    if error_counts:
+        print("\nError Summary:")
+        for error_type, count in sorted(error_counts.items()):
+            print(f"  {error_type}: {count:,}")
 
 def parse_args():
     ap = argparse.ArgumentParser(description="Model-label experiment runner")
@@ -131,10 +174,21 @@ def parse_args():
         help="'all' or comma list of logical model names (see models.yaml)",
     )
     ap.add_argument(
-        "--concurrency",
+        "--rpm",
         type=int,
-        default=5,
-        help="Maximum number of concurrent requests (default: 5)",
+        default=60,
+        help="Maximum requests per minute (default: 60)",
+    )
+    ap.add_argument(
+        "--template",
+        default="default",
+        help="Name of the prompt template to use (default: default)",
+    )
+    ap.add_argument(
+        "--max-tokens",
+        type=int,
+        default=500,
+        help="Maximum tokens per response (default: 500)",
     )
     return ap.parse_args()
 
