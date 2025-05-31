@@ -7,8 +7,8 @@ o4_mini_high: openai/o4-mini-high
 gpt_4o_mini_24_07_18: openai/gpt-4o-mini-2024-07-18
 
 # Google
-gemini_2_5_pro: google/gemini-2.5-pro-preview
-gemini_flash_2_5: google/gemini-2.5-flash-preview-05-20
+gemini_2_5_pro: google/gemini-2.5-pro-preview-05-06
+gemini_2_5_flash: google/gemini-2.5-flash-preview-05-20
 
 # Anthropic
 claude_4_opus: anthropic/claude-opus-4

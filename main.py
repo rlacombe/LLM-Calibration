@@ -2,7 +2,8 @@
 """
 Run experiments:
 
-    python main.py --input statements.tsv --output results.tsv --models all --rpm 60 --template default --max-tokens 500
+    python main.py --input statements.tsv --output results.tsv --models all --rpm 60 --template default --reasoning-budget 1000
+    python main.py --input statements.tsv --output results.tsv --models all --rpm 60 --template default --max-tokens 500 --reasoning-budget 1000
 """
 import argparse, asyncio, sys, hashlib, traceback
 from pathlib import Path
@@ -12,6 +13,7 @@ from tqdm.asyncio import tqdm_asyncio
 import fcntl
 import json
 from collections import defaultdict
+from typing import Optional
 
 from config import PROMPT_TEMPLATE_PATH, MODEL_ID_MAP
 from router_adapter import run, TOKENS_USED, set_max_rpm, set_max_tokens
@@ -57,11 +59,12 @@ async def call_models_for_row(
     df: pd.DataFrame,
     out_path: Path,
     error_counts: defaultdict,
+    reasoning_budget: Optional[int] = None,
 ) -> None:
     """
     Fan-out async calls for one row; write results directly to TSV.
     """
-    coros = [run(mid, prompt) for mid in model_ids]
+    coros = [run(mid, prompt, reasoning_budget) for mid in model_ids]
     outputs = await asyncio.gather(*coros, return_exceptions=True)
 
     # Update the row in the dataframe
@@ -98,11 +101,15 @@ async def main_async(args):
     print(f"Reading input from: {args.input}")
     print(f"Rate limit: {args.rpm} requests per minute")
     print(f"Using template: {args.template}")
-    print(f"Max tokens per response: {args.max_tokens}")
+    if args.max_tokens is not None:
+        print(f"Max tokens per response: {args.max_tokens}")
+    if args.reasoning_budget is not None:
+        print(f"Reasoning budget: {args.reasoning_budget}")
     
     # Set rate limit and max tokens
     set_max_rpm(args.rpm)
-    set_max_tokens(args.max_tokens)
+    if args.max_tokens is not None:
+        set_max_tokens(args.max_tokens)
     
     df = pd.read_csv(args.input, sep='\t')
 
@@ -146,7 +153,7 @@ async def main_async(args):
     # Process rows with progress bar
     tasks = []
     for idx, prompt in enumerate(prompts):
-        tasks.append(call_models_for_row(idx, prompt, model_ids, df, out_path, error_counts))
+        tasks.append(call_models_for_row(idx, prompt, model_ids, df, out_path, error_counts, args.reasoning_budget))
 
     # Run with async progress bar
     for task in tqdm_asyncio.as_completed(tasks, desc="Running", total=len(tasks)):
@@ -187,8 +194,12 @@ def parse_args():
     ap.add_argument(
         "--max-tokens",
         type=int,
-        default=500,
-        help="Maximum tokens per response (default: 500)",
+        help="Maximum tokens per response (optional, no limit if not specified)",
+    )
+    ap.add_argument(
+        "--reasoning-budget",
+        type=int,
+        help="Reasoning budget for Gemini models (optional)",
     )
     return ap.parse_args()
 

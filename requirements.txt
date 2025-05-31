@@ -1,9 +1,12 @@
 # requirements.txt
-openai>=1.24          # OpenRouter speaks OpenAI protocol
+openai>=1.0.0
 python-dotenv>=1.0    # load .env into env vars
-pandas>=2.2
+pandas>=2.0.0
 pyyaml>=6.0
 httpx>=0.27
-tqdm>=4.66
-tenacity>=8.3
-jinja2>=3.1          # template engine
+tqdm>=4.65.0
+tenacity>=8.2.0
+jinja2>=3.0.0
+google-genai>=1.18.0
+google>= 3.0.0
+matplotlib>=3.9.4
