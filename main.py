@@ -60,11 +60,12 @@ async def call_models_for_row(
     out_path: Path,
     error_counts: defaultdict,
     reasoning_budget: Optional[int] = None,
+    use_search: bool = False,
 ) -> None:
     """
     Fan-out async calls for one row; write results directly to TSV.
     """
-    coros = [run(mid, prompt, reasoning_budget) for mid in model_ids]
+    coros = [run(mid, prompt, reasoning_budget, use_search) for mid in model_ids]
     outputs = await asyncio.gather(*coros, return_exceptions=True)
 
     # Update the row in the dataframe
@@ -105,6 +106,8 @@ async def main_async(args):
         print(f"Max tokens per response: {args.max_tokens}")
     if args.reasoning_budget is not None:
         print(f"Reasoning budget: {args.reasoning_budget}")
+    if args.use_search:
+        print("Web search enabled for Gemini models")
     
     # Set rate limit and max tokens
     set_max_rpm(args.rpm)
@@ -113,8 +116,8 @@ async def main_async(args):
     
     df = pd.read_csv(args.input, sep='\t')
 
-    if df.columns[0] != "statement_idx":
-        sys.exit("First column must be 'statement_idx'")
+    # if df.columns[0] != "statement_idx":
+    #     sys.exit("First column must be 'statement_idx'")
     if "statement" not in df.columns:
         sys.exit("Must have a 'statement' column")
     if "confidence" not in df.columns:
@@ -153,7 +156,7 @@ async def main_async(args):
     # Process rows with progress bar
     tasks = []
     for idx, prompt in enumerate(prompts):
-        tasks.append(call_models_for_row(idx, prompt, model_ids, df, out_path, error_counts, args.reasoning_budget))
+        tasks.append(call_models_for_row(idx, prompt, model_ids, df, out_path, error_counts, args.reasoning_budget, args.use_search))
 
     # Run with async progress bar
     for task in tqdm_asyncio.as_completed(tasks, desc="Running", total=len(tasks)):
@@ -188,8 +191,8 @@ def parse_args():
     )
     ap.add_argument(
         "--template",
-        default="default",
-        help="Name of the prompt template to use (default: default)",
+        default="original",
+        help="Name of the prompt template to use (default: original)",
     )
     ap.add_argument(
         "--max-tokens",
@@ -200,6 +203,11 @@ def parse_args():
         "--reasoning-budget",
         type=int,
         help="Reasoning budget for Gemini models (optional)",
+    )
+    ap.add_argument(
+        "--use-search",
+        action="store_true",
+        help="Enable web search for Gemini models (optional)",
     )
     return ap.parse_args()
 

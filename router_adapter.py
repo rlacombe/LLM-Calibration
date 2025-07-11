@@ -15,16 +15,29 @@ from tenacity import (
 )
 from typing import Dict, Any, Union, AsyncGenerator, Optional
 
+# Load environment variables from .env file
+from dotenv import load_dotenv
+load_dotenv()
+
+# Try to get Google API key from environment, fallback to config if needed
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
+if not GOOGLE_API_KEY:
+    try:
+        from config import GOOGLE_API_KEY
+    except ImportError:
+        pass
+
 # Initialize OpenAI client for OpenRouter
 client = AsyncOpenAI(
-    api_key=os.getenv("OPENROUTER_API_KEY"),  # loaded by config.py
+    api_key=os.getenv("OPENAI_API_KEY"),  # loaded by config.py
     base_url="https://openrouter.ai/api/v1",
     timeout=180.0,  # 3 minutes timeout
     max_retries=5
 )
 
-# Initialize Google Generative AI
-genai_client = genai.Client()
+# Initialize Google Generative AI with API key
+# Use the proper configuration method to ensure API key is set
+genai_client = genai.Client(api_key=GOOGLE_API_KEY)
 
 # In-memory per-run token counter (for budgeting)
 TOKENS_USED: Dict[str, int] = {"prompt": 0, "completion": 0}
@@ -157,7 +170,7 @@ async def wait_for_token():
     
     TOKENS_AVAILABLE -= 1
 
-async def run_gemini(model_id: str, prompt: str, reasoning_budget: Optional[int] = None) -> str:
+async def run_gemini(model_id: str, prompt: str, reasoning_budget: Optional[int] = None, use_search: bool = False) -> str:
     """Run a Gemini model with the Google Generative AI SDK."""
     # Wait for rate limit token
     await wait_for_token()
@@ -175,12 +188,19 @@ async def run_gemini(model_id: str, prompt: str, reasoning_budget: Optional[int]
     
     while retry_count <= max_retries:
         try:
+            # Set up tools for search functionality if enabled
+            tools = []
+            if use_search:
+                tools.append(types.Tool(google_search=types.GoogleSearch()))
+            
             # Make the API call
             response = await asyncio.to_thread(
                 genai_client.models.generate_content,
                 model=model_name,
                 contents=prompt,
                 config=types.GenerateContentConfig(
+                    tools=tools if tools else None,
+                    response_modalities=["TEXT"] if tools else None,
                     thinking_config=types.ThinkingConfig(thinking_budget=reasoning_budget) if reasoning_budget is not None else None
                 )
             )
@@ -267,7 +287,7 @@ async def run_gemini(model_id: str, prompt: str, reasoning_budget: Optional[int]
     ),
     reraise=True
 )
-async def run(model_id: str, prompt: str, reasoning_budget: Optional[int] = None) -> str:
+async def run(model_id: str, prompt: str, reasoning_budget: Optional[int] = None, use_search: bool = False) -> str:
     """
     Run a model with automatic routing and token tracking.
     
@@ -275,6 +295,7 @@ async def run(model_id: str, prompt: str, reasoning_budget: Optional[int] = None
         model_id: The model identifier (e.g., "anthropic/claude-3-opus-20240229")
         prompt: The input prompt
         reasoning_budget: Optional reasoning budget for Gemini models
+        use_search: Whether to enable web search for Gemini models
         
     Returns:
         The model's response text
@@ -284,7 +305,7 @@ async def run(model_id: str, prompt: str, reasoning_budget: Optional[int] = None
     """
     # Route to appropriate handler based on model type
     if "gemini" in model_id.lower():
-        return await run_gemini(model_id, prompt, reasoning_budget)
+        return await run_gemini(model_id, prompt, reasoning_budget, use_search)
     
     # Wait for rate limit token
     await wait_for_token()
