@@ -92,4 +92,5 @@ ax2.legend()
 fig.suptitle('Gemini 2.5 Flash – Average Confidence vs Thinking Budget', fontsize=16, y=0.98)
 
 plt.tight_layout()
+plt.savefig('figure-confidence.png', dpi=600, bbox_inches="tight")
 plt.show()
