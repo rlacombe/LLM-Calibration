@@ -8,13 +8,13 @@ budgets = np.array([0, 64, 128, 192, 256, 320, 384, 448, 512,
 accuracy = np.array([41.7, 43.3, 44.7, 45.0, 41.0, 39.7, 39.0, 38.7,
                      40.0, 42.3, 41.3, 38.7, 40.7, 41.3, 41.7])
 
-fig, ax = plt.subplots(figsize=(12, 7))
+fig, ax = plt.subplots(figsize=(12, 6))
 
 # Navy blue line
 ax.plot(budgets, accuracy, marker='o', linewidth=3, color='navy')
 
 # Symmetric log: linear up to 512 with linscale chosen so linear occupies ~ half axis
-linscale_val = 5  # approx log2(24576/512) ≈ 5.585
+linscale_val = 4  # approx log2(24576/512) ≈ 5.585
 ax.set_xscale('symlog', base=2, linthresh=512, linscale=linscale_val)
 
 # Tick positions and labels
