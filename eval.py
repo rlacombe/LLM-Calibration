@@ -50,7 +50,7 @@ def main():
         sys.exit(f"Error reading {args.results}: {e}")
     
     # Validate columns
-    required = ["statement_idx", "statement", "confidence"]
+    required = ["statement", "confidence"]
     missing = [col for col in required if col not in df.columns]
     if missing:
         sys.exit(f"Missing required columns: {missing}")
@@ -60,7 +60,6 @@ def main():
     
     # Print results
     print("\nAccuracy Results:")
-    print("-" * 80)
     for model, stats in results.items():
         print(f"\n{model}:")
         print(f"  Accuracy: {stats['accuracy']:.1%}")
