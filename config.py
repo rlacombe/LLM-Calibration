@@ -15,6 +15,13 @@ if not OPENROUTER_API_KEY:
         "Create a .env file with OPENROUTER_API_KEY='sk-...'"
     )
 
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
+if not GOOGLE_API_KEY:
+    raise RuntimeError(
+        "Environment variable GOOGLE_API_KEY is missing. "
+        "Create a .env file with GOOGLE_API_KEY='your-google-api-key'"
+    )
+
 REPO_ROOT = Path(__file__).resolve().parent
 PROMPT_TEMPLATE_PATH = REPO_ROOT / "prompt.txt"
 MODELS_YAML_PATH = REPO_ROOT / "models.yaml"
@@ -24,4 +31,4 @@ with MODELS_YAML_PATH.open("r") as fh:
     MODEL_ID_MAP: dict[str, str] = yaml.safe_load(fh)
 
 # Regex we expect in model output (strict lowercase labels)
-VALID_LABELS = ("low", "medium", "high", "very high")
+VALID_LABELS = ("low", "medium", "high", "very high", "i don't know", "not classifiable", "probably not carcinogenic", "probably carcinogenic", "possibly carcinogenic", "carcinogenic to humans")
