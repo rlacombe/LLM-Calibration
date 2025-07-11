@@ -4,7 +4,7 @@ from typing import Optional
 from config import VALID_LABELS
 
 # Pre-compile once - order matters: "very high" must come before "high"
-_LABEL_RE = re.compile(r"(I don't know|very high|high|medium|low)", re.IGNORECASE)
+_LABEL_RE = re.compile(r"(I don't know|very high|high|medium|low|not classifiable|probably not carcinogenic|probably carcinogenic|possibly carcinogenic|carcinogenic to humans)", re.IGNORECASE)
 
 def extract_label(text: str) -> Optional[str]:
     """
