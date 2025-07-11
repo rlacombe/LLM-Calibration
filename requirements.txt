@@ -10,3 +10,4 @@ jinja2>=3.0.0
 google-genai>=1.18.0
 google>= 3.0.0
 matplotlib>=3.9.4
+scipy>=1.10.0
