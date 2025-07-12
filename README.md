@@ -4,6 +4,8 @@ Experiments with reasoning models calibration with human experts confidence.
 
 This repository presents the code for the experiments in [Don't Think Twice! Over-Reasoning Impairs Confidence Calibration](https://openreview.net/forum?id=e7G5aeMOUP), published at ICML 2025 Workshop on Reliable and Responsible Foundation Models.
 
+![Experimental workflow: extract statements from IPCC reports and IARC monographs, mask ground truth confidence, prompt LLMs to reconstruct labels, benchmark classification accuracy.](https://github.com/rlacombe/LLM-Calibration/blob/main/figure-climatex.png)
+
 
 ## Setup
 
