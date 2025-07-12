@@ -270,9 +270,9 @@ def main():
         print(f"\nAccuracy Results ({dataset_type.upper()} dataset):")
         for model, stats in results.items():
             print(f"\n{model}:")
-            print(f"  Accuracy: {stats['accuracy']:.1%}")
+            print(f"  Accuracy: {stats['accuracy']:.2%}")
             print(f"  Correct: {stats['correct']:,} / {stats['total']:,} predictions")
-            print(f"  Average Confidence: {stats['average_confidence']:.2f}")
+            print(f"  Average Confidence: {stats['average_confidence']:.3f}")
             
             if stats['errors']:
                 print("\n  Errors:")
