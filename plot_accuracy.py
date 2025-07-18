@@ -1,7 +1,13 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import argparse
 from matplotlib.ticker import ScalarFormatter
 from confidence_intervals import bootstrap_ci
+
+# Parse command line arguments
+parser = argparse.ArgumentParser(description='Plot accuracy vs thinking budget')
+parser.add_argument('--fontsize', type=int, default=12, help='Base font size (default: 12)')
+args = parser.parse_args()
 
 # Data
 budgets = np.array([0, 64, 128, 192, 256, 320, 384, 448, 512, 768, 1024, 2048, 4096, 8192, 16384, 24576])
@@ -45,6 +51,9 @@ iarc_upper_bounds = np.array(iarc_upper_bounds)
 # Create figure with two subplots side by side
 fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 6))
 
+# Set font sizes
+plt.rcParams.update({'font.size': args.fontsize})  
+
 # Symmetric log scale parameters
 linscale_val = 4  # approx log2(24576/512) ≈ 5.585
 
@@ -64,11 +73,12 @@ ax1.set_xticks(tick_positions)
 ax1.set_xticklabels(tick_labels, rotation=45)
 ax1.get_xaxis().set_major_formatter(ScalarFormatter())
 ax1.get_xaxis().set_minor_formatter(plt.NullFormatter())
-ax1.set_xlabel('Thinking Budget')
-ax1.set_ylabel('Accuracy (%)')
-ax1.set_title('IPCC Dataset', pad=15)
+ax1.set_xlabel('Thinking Budget', fontsize=args.fontsize)
+ax1.set_ylabel('Accuracy (%)', fontsize=args.fontsize)
+ax1.set_title('IPCC Dataset', pad=15, fontsize=args.fontsize)
+ax1.tick_params(axis='both', which='major', labelsize=args.fontsize)
 ax1.grid(True, which='both', linestyle='--', alpha=0.4)
-ax1.legend()
+ax1.legend(fontsize=args.fontsize)
 
 # Plot IARC data (right subplot)
 ax2.fill_between(budgets, iarc_lower_bounds, iarc_upper_bounds, alpha=0.3, color='lightcoral', label=f'{int(confidence_level*100)}% Confidence Interval')
@@ -79,14 +89,15 @@ ax2.set_xticks(tick_positions)
 ax2.set_xticklabels(tick_labels, rotation=45)
 ax2.get_xaxis().set_major_formatter(ScalarFormatter())
 ax2.get_xaxis().set_minor_formatter(plt.NullFormatter())
-ax2.set_xlabel('Thinking Budget')
-ax2.set_ylabel('Accuracy (%)')
-ax2.set_title('IARC Dataset', pad=15)
+ax2.set_xlabel('Thinking Budget', fontsize=args.fontsize)
+ax2.set_ylabel('Accuracy (%)', fontsize=args.fontsize)
+ax2.set_title('IARC Dataset', pad=15, fontsize=args.fontsize)
+ax2.tick_params(axis='both', which='major', labelsize=args.fontsize)
 ax2.grid(True, which='both', linestyle='--', alpha=0.4)
-ax2.legend()
+ax2.legend(fontsize=args.fontsize)
 
 # Main title
-fig.suptitle('Gemini 2.5 Flash – Accuracy vs Thinking Budget', fontsize=16, y=0.98)
+fig.suptitle('Gemini 2.5 Flash – Accuracy vs Thinking Budget', fontsize=args.fontsize *1.5, y=0.98)
 
 plt.tight_layout()
 plt.savefig('figure-accuracy.png', dpi=600, bbox_inches="tight")
